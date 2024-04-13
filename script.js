@@ -1,15 +1,20 @@
+
+
 document.addEventListener('DOMContentLoaded', () => {
     fetchEvents();
-    const form = document.getElementById('eventForm');
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        postEvent();
-    });
+    const form = document.getElementById('addEventForm');
+    form.addEventListener('submit', addEvent);
 });
+
 
 function fetchEvents() {
     fetch('https://my-project-j0bk.onrender.com/events')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(events => {
             const eventsContainer = document.getElementById('events');
             eventsContainer.innerHTML = events.map(event => `
@@ -34,34 +39,35 @@ function fetchEvents() {
         .catch(error => console.error('Error:', error));
 }
 
-
-function postEvent() {
-    const eventData = {
-        name: document.getElementById('name').value,
-        location: document.getElementById('location').value,
-        dates: document.getElementById('dates').value,
-        category: document.getElementById('category').value,
-        description: document.getElementById('description').value,
-    };
+function addEvent(event) {
+    event.preventDefault();
+    console.log('Form is being submitted');
+    const formEl = event.target;
+    const formData = new FormData(formEl);
+    const jsonData = JSON.stringify(Object.fromEntries(formData));
 
     fetch('https://my-project-j0bk.onrender.com/events', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify(eventData),
+        body: jsonData
     })
-    .then(response => response.json())
-    .then(() => {
-        alert('Event added successfully!');
-        fetchEvents(); // Refresh the events list
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        console.log('Event added:', result);
+        fetchEvents(); // Fetch events again to update the list
+        formEl.reset(); // Reset the form after successful submission
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('Failed to add the event.');
+        console.error('Error adding event:', error);
     });
 }
-
 
 function addFollower(eventId) {
     const followersElement = document.getElementById(`followers-${eventId}`);
@@ -100,129 +106,40 @@ function updateRating(eventId, rating) {
     .catch(error => console.error('Error:', error));
 }
 
-function postComment(eventId) {
-    const commentInput = document.getElementById(`comment-input-${eventId}`);
-    const commentText = commentInput.value;
+function buyTicket(eventId) {
+    const ticketsAvailableElement = `tickets-available-${eventId}`
 
-    //POST request to add a comment
-    fetch(`https://my-project-j0bk.onrender.com/events/${eventId}/comments`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ comment: commentText }),
-    })
-    .then(() => {
-        fetchEvents(); // Reload events to display the new comment
-        commentInput.value = ''; // Clear the input field
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-
-function buyTicket(eventId, ticketsToBuy = 1) {
-    const ticketsAvailableElement = document.getElementById(`tickets-available-${eventId}`);
+        const fetchurl = `https://my-project-j0bk.onrender.com/events/${eventId}`
+        fetch(fetchurl,{})
+        .then(response => response.json())
+        .then((tickets) => { 
+    if(tickets.totalTickets > tickets.ticketsSold){
+        return fetch(fetchurl, {
+            method : `PATCH`, 
+            headers : {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+                { ticketsSold: tickets.ticketsSold +1},
+                 {totalTickets: tickets.totalTickets -1}
+            ), 
+        })
+    } else{
+        console.warn (`No Tickets Available`)
+        return Promise.reject(`Wacha Upuss`)
     
-    fetch(`https://my-project-j0bk.onrender.com/events/${eventId}/buy-ticket`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ tickets: ticketsToBuy }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            // If the response is not 2xx, it will throw an error and catch block will handle it
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        if (data.success) {
-            // Update the UI with the new ticket count
-            ticketsAvailableElement.textContent = data.ticketsAvailable;
+    }
+        })
+        .then(response => response.json())
+        .then(updatedEvent => {
+            
+            ticketsAvailableElement.textContent = updatedEvent.totalTickets;
             alert('Ticket purchased successfully!');
-        } else {
-            // If the data.success is false, handle it accordingly
-            alert('Failed to purchase ticket: ' + data.message);
-        }
-    })
-    .catch(error => {
-        // Catch any errors that occur during the fetch process
-        console.error('Error:', error);
-        alert('Failed to purchase ticket. See console for details.');
-    });
+        
+        })
+        .catch(error => {
+    
+            console.error('Error:', error);
+            alert('Failed to purchase ticket.');
+         });
 }
-
-
-// Simulated function to fetch events and populate the category dropdown
-function loadEventCategories() {
-    // Simulate fetching data from db.json
-    // In a real app, this would be an API request to your server
-    const events = [
-        // Assuming your db.json events array is accessible here
-    ];
-
-    const categorySelect = document.getElementById('category');
-    const uniqueCategories = [...new Set(events.map(event => event.category))];
-
-    uniqueCategories.forEach(category => {
-        const optionElement = document.createElement('option');
-        optionElement.value = category.toLowerCase();
-        optionElement.textContent = category;
-        categorySelect.appendChild(optionElement);
-    });
-}
-
-// Adjusted submitForm function
-function submitForm(event) {
-    event.preventDefault();
-
-    // Collect form data as before
-    // ...
-
-    // Here, you would typically make an API call to your server to create the booking
-    // For demonstration, we'll simply update the UI as if the booking was successful
-
-    // Show booking details and a success message
-    document.getElementById('bookingDetails').classList.remove('hidden');
-    document.getElementById('successMessage').textContent = 'Booking Successful!';
-}
-
-// Call loadEventCategories on page load
-window.onload = function() {
-    loadEventCategories();
-    changeSeatType(); // Ensure this is called to initialize the seat type selection
-};
-
-document.getElementById('eventForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    const newEvent = {
-        name: document.getElementById('name').value,
-        location: document.getElementById('location').value,
-        dates: document.getElementById('dates').value,
-        category: document.getElementById('category').value,
-        description: document.getElementById('description').value,
-    };
-
-    // Send this data to your server
-    fetch('/events', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newEvent),
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Success:', data);
-        // Optionally, add code to update the UI with the new event
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-
-    // Reset the form after submission
-    event.target.reset();
-});

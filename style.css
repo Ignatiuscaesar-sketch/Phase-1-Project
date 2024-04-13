@@ -1,5 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap');
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Times New Roman',sans-serif;
     background-color: #361c1f; /* Lighter background for contrast */
     color: #333;
     line-height: 1.6;
@@ -28,11 +29,11 @@ body {
 }
 
 .event {
-    background: #FEFEFE; /* Slightly off-white for the cards to stand out */
-    border: 1px solid #FFC107; /* Bright border color */
-    box-shadow: 0 10px 20px rgba(255,193,7,0.2), 0 6px 6px rgba(255,193,7,0.24); /* Soft shadow with a hint of color */
+    background: #FEFEFE; 
+    border: 1px solid #FFC107; 
+    box-shadow: 0 10px 20px rgba(255,193,7,0.2), 0 6px 6px rgba(255,193,7,0.24); 
     padding: 20px;
-    border-radius: 8px; /* More pronounced border radius for a softer look */
+    border-radius: 8px; 
     transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
 }
 
@@ -42,7 +43,7 @@ body {
 }
 
 button, input[type="submit"] {
-    background: #007BFF; /* Bright blue for buttons */
+    background: #007BFF; 
     color: #ffffff;
     padding: 10px 20px;
     border: 0;
@@ -52,7 +53,7 @@ button, input[type="submit"] {
 }
 
 button:hover, input[type="submit"]:hover {
-    background-color: #0056b3; /* Darker shade on hover for contrast */
+    background-color: #0056b3; 
     transform: scale(1.05);
 }
 
@@ -60,14 +61,13 @@ form input, form textarea {
     width: calc(100% - 22px);
     padding: 10px;
     margin-bottom: 20px;
-    border: 1px solid #FFC107; /* Bright borders for inputs */
+    border: 1px solid #FFC107; 
     border-radius: 5px;
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); /* Subtle inset shadow for depth */
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); 
 }
 
-/* Navigation Bar Styles */
 nav {
-    background: #28A745; /* Vibrant green for the navigation bar */
+    background: #28A745; 
     color: #ffffff;
     padding: 10px 20px;
 }
@@ -82,7 +82,7 @@ nav {
 
 .logo img {
     vertical-align: middle;
-    height: 50px; /* Ensure the logo is not too large */
+    height: 50px; 
 }
 
 .nav-links {
@@ -102,12 +102,57 @@ nav {
 }
 
 .nav-links a:hover {
-    color: #FFC107; /* Bright hover color for links */
+    color: #FFC107; 
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
     #events {
         grid-template-columns: 1fr;
     }
+}
+
+#Fonts { 
+    font-family: "Bungee Spice";
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.home-section {
+    background-color: #fff; 
+    text-align: center; 
+    padding: 10px 10px; 
+    font-family: 'Haettenschweiler', sans-serif; 
+}
+
+.lead {
+    font-size: 1.25rem; 
+    color: #1aa58c; 
+    margin-bottom: 20px; 
+    font-weight: 400; 
+}
+
+
+@media (min-width: 768px) {
+    .lead {
+        font-size: 1.5rem; 
+    }
+}
+
+.dropdown-menu {
+    background-color: #ffffff; 
+    border: 1px solid #ccc; 
+    box-shadow: 0 8px 16px rgba(105, 15, 194, 0.15); 
+    font-family: 'Lato', sans-serif; 
+}
+
+.dropdown-item {
+    color: #9c2773;
+    padding: 8px 20px; 
+}
+
+.dropdown-item:hover {
+    background-color: #153e67; 
 }
